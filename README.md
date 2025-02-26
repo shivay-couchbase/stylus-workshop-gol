@@ -15,29 +15,31 @@
 - `rustup target add wasm32-unknown-unknown` add WebAssembly target
 
 ### Step 1: Setup
-- `git checkout step-1-setup` checkout the first step of the workshop
-- `pnpm install -r` 
-- `cargo stylus check`
+- `git checkout step-1-setup` let's have a look around
+- `pnpm install -r`
+-  `cd apps/contracts-stylus`   `cargo stylus check`
 
-### Step 2: Stylus Contract
-- `git checkout step-2-stylus-contract` checkout the second step of the workshop
+### Step 2: Game of Life Stylus Contract
+- `git checkout step-2-stylus-contract` let's implement a Game Of Life with Stylus
 - `pnpm install -r` install all the dependencies in all the `apps`
-- `cargo stylus check`
+-  `cd apps/contracts-stylus`   `cargo stylus check`
+-  `src/lib.rs`
 
 ### Step 3: Frontend
-- `git checkout step-3-frontend` checkout the second step of the workshop
+- `git checkout step-3-frontend` let's put together a frontend
 - `pnpm install -r` install all the dependencies in all the `apps`
-- `cargo stylus check`
+-  `cd apps/contracts-stylus`   `cargo stylus check`
 
 ### Step 4: Solidity Contract
-- `git checkout step-4-solidity-contract` checkout the second step of the workshop
-- `pnpm install -r` install all the dependencies in all the `apps`
-- `cargo stylus check`
+- `git checkout step-4-solidity-contract` let's have a look to the equivalent implementation in Solidity
+-  `src/NFT.sol`
+-  `cd apps/contracts-stylus`   `cargo stylus check`
 
 ### Step 5: Solidity + Stylus Contract
-- `git checkout step-5-solidity-and-stylus` checkout the second step of the workshop
+- `git checkout master` you go back to the end result
 - `pnpm install -r` install all the dependencies in all the `apps`
-- `cargo stylus check`
+-  `src/StylusNFT.sol`
+-  `cd apps/contracts-stylus`   `cargo stylus check`
 
 ## Workspace shortcuts
 Basic commands to run the project across the different apps.

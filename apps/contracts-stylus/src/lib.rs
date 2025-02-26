@@ -85,12 +85,15 @@ impl GameOfLifeNFT {
 
             for y in 0..size {
                 for x in 0..size {
+                    // Count the number of live neighbors for each cell
+                    // In Conway's Game of Life, each cell has 8 neighbors (horizontally, vertically, and diagonally adjacent)
                     let mut neighbors = 0;
                     for dy in -1..=1 {
                         for dx in -1..=1 {
                             if dx == 0 && dy == 0 {
-                                continue;
+                                continue; // Skip the cell itself
                             }
+                            // Handle wrapping around the edges (toroidal grid)
                             let nx = (x as i32 + dx).rem_euclid(size as i32) as usize;
                             let ny = (y as i32 + dy).rem_euclid(size as i32) as usize;
                             if grid[ny][nx] {
@@ -98,8 +101,15 @@ impl GameOfLifeNFT {
                             }
                         }
                     }
+                    
+                    // Apply Conway's Game of Life rules:
+                    // 1. Any living cell with fewer than two live neighbors dies, as if dying of isolation.
+                    // 2. Any living cell with two or three live neighbors continues to live.
+                    // 3. Any living cell with more than three live neighbors dies, as if dying of overpopulation.
+                    // 4. Any dead cell with exactly three live neighbors becomes a living cell, as if those cells reproduce.
                     next[y][x] = matches!((grid[y][x], neighbors),
                         (true, 2) | (true, 3) | (false, 3));
+                    
                     if next[y][x] {
                         next_has_cells = true;
                         let is_last = has_cells && gen == generations - 1;

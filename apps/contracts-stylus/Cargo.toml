@@ -1,0 +1,56 @@
+[package]
+name = "stylus-workshop"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/ArbitrumFoundation/stylus-workshop"
+repository = "https://github.com/ArbitrumFoundation/stylus-workshop"
+keywords = ["arbitrum", "ethereum", "stylus", "alloy"]
+description = "Stylus workshop example"
+
+[dependencies]
+alloy-primitives = { version = "0.7.6", default-features = false }
+alloy-sol-types = "0.8.20"
+mini-alloc = "0.4.2"
+stylus-sdk = "0.6.0"
+hex = "0.4.3"
+dotenv = "0.15.0"
+openzeppelin-stylus = "0.1.1"
+
+[dev-dependencies]
+tokio = { version = "1.12.0", features = ["full"] }
+ethers = "2.0"
+eyre = "0.6.8"
+motsu = "0.2.1"
+toml = "0.8.13"
+
+ alloy = { version = "=0.7.3", features = [
+  "contract",
+  "network",
+  "providers",
+  "provider-http",
+  "rpc-client",
+  "rpc-types-eth",
+  "signer-local",
+  "getrandom",
+ ] }
+regex = "1.11.1"
+
+[features]
+export-abi = []
+debug = ["stylus-sdk/debug"]
+
+[[bin]]
+name = "genft"
+path = "src/main.rs"
+
+[lib]
+crate-type = ["lib", "cdylib"]
+path = "src/lib.rs"
+
+[profile.release]
+codegen-units = 1
+strip = true
+lto = true
+panic = "abort"
+opt-level = "s"

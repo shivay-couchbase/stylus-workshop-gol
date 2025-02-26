@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primary Colors */
+  --navy: #213147;
+  --light-blue: #12AAFF;
+  --moon: #E5E5E5;
+  --white: #FFFFFF;
+
+  /* Secondary Colors */
+  --nova-orange: #FF7700;
+  --shift-blue: #1B4ADD;
+  --stylus-pink: #E3066E;
+  --black: #000000;
+}
+
+html, body, #root {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+@layer base {
+  body {
+    @apply min-h-screen;
+    background: linear-gradient(45deg, var(--black) 0%, var(--navy) 100%);
+  }
+
+  h1 {
+    @apply text-4xl font-bold text-white mb-4 text-center pt-8;
+  }
+
+  h2 {
+    @apply text-2xl font-bold mb-4 text-black;
+  }
+
+  h3 {
+    @apply text-xl font-semibold mb-4 text-black;
+  }
+
+  p {
+    @apply text-lg mb-4 text-white;
+  }
+}
+
+@layer components {
+  .card {
+    @apply max-w-7xl mx-auto p-6 space-y-6;
+  }
+
+  .card h1, 
+  .card h2,
+  .card h3 {
+    @apply text-white;
+  }
+
+  .card p {
+    @apply text-white/90;
+  }
+
+  .card .secondary-text {
+    @apply text-white/70;
+  }
+
+  .card .highlight {
+    @apply text-light-blue hover:text-light-blue/80;
+  }
+
+  .balance-container {
+    @apply p-2 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+
+  .mint-container {
+    @apply p-6 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+
+  .mint-button {
+    @apply bg-stylus-pink hover:bg-stylus-pink/90 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  .token-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8;
+  }
+
+  .token-item {
+    @apply flex flex-col items-center p-4 rounded-lg;
+  }
+
+  .token-image {
+    @apply w-32 h-32 mb-2 border border-white/20;
+    .gol-cell {
+        fill: var(--stylus-pink) !important;
+        /* filter: drop-shadow(0 0 2px var(--stylus-pink)); */
+      }
+  }
+
+  .balance-display {
+    @apply text-black text-lg mb-4;
+  }
+}
+
+footer {
+  @apply mt-12 pb-8 text-white text-center;
+}
+
+footer a {
+  @apply text-light-blue hover:text-light-blue/80 transition-colors duration-200;
+}

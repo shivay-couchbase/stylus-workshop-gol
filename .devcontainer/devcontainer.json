@@ -1,0 +1,34 @@
+{
+  "name": "Arbitrum Stylus Workshop",
+  "image": "mcr.microsoft.com/devcontainers/rust:1-2024",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "postCreateCommand": "rustup target add wasm32-unknown-unknown && npm install -g pnpm && pnpm install -r && cargo install --force cargo-stylus",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+
+  "forwardPorts": [
+    3000,
+    8547
+  ],
+
+  "remoteEnv": {
+    "PATH": "/home/vscode/.cargo/bin:${env:PATH}"
+  },
+
+  "remoteUser": "vscode"
+}

@@ -2,6 +2,12 @@
 
 ![cover](./workshop-cover.png)
 
+## GitHub Codespaces
+
+[![Open in Codespaces](https://img.shields.io/badge/Open%20in-GitHub%20Codespaces-blue?logo=github&logoColor=white&style=for-the-badge)](https://codespaces.new/hummusonrails/stylus-workshop-gol/tree/master)
+
+If using GitHub Codespaces, just click on the button above, and if you already have a GitHub account, you can get into an environment that "just works"!
+
 ## Requirements
 - [pnpm](https://pnpm.io/installation)
 - [nvm](https://github.com/nvm-sh/nvm#installing-and-updating)

@@ -10,7 +10,7 @@
     "ghcr.io/devcontainers/features/git:1": {}
   },
 
-  "postAttachCommand": "rustup target add wasm32-unknown-unknown && npm install -g pnpm && pnpm install -r && cargo install --force cargo-stylus",
+  "postAttachCommand": "rustup install 1.83.0 && rustup default 1.83.0 && rustup target add wasm32-unknown-unknown && npm install -g pnpm && pnpm install -r && cargo install --force cargo-stylus && curl -L https://foundry.paradigm.xyz | bash && /home/vscode/.foundry/bin/foundryup",
 
   "customizations": {
     "vscode": {
@@ -27,7 +27,9 @@
   ],
 
   "remoteEnv": {
-    "PATH": "/home/vscode/.cargo/bin:${env:PATH}"
+    "RUSTUP_HOME": "/usr/local/rustup",
+    "CARGO_HOME": "/usr/local/cargo",
+    "PATH": "/usr/local/cargo/bin:/usr/local/rustup/bin:/home/vscode/.foundry/bin:/home/vscode/.cargo/bin:${env:PATH}"
   },
 
   "remoteUser": "vscode"

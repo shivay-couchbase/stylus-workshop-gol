@@ -179,6 +179,25 @@ const App = (): JSX.Element => {
           setAddress(address);
           setChainId(Number(network.chainId));
           setIsConnected(true);
+
+          // Log current network info after connection
+          function getNetworkName(chainId: number | null) {
+            if (!chainId) return 'Unknown';
+            switch (chainId) {
+              case 1: return 'Ethereum Mainnet';
+              case 42161: return 'Arbitrum One';
+              case 421613: return 'Arbitrum Goerli';
+              case 412346: return 'Arbitrum DevNode';
+              default: return 'Unknown';
+            }
+          }
+          const EXPECTED_CHAIN_ID = Number(network.chainId);
+          console.log('--- Network Debug Info ---');
+          console.log('Connected chainId:', Number(network.chainId));
+          console.log('Connected network:', getNetworkName(Number(network.chainId)));
+          console.log('Expected chainId:', EXPECTED_CHAIN_ID);
+          console.log('Expected network:', getNetworkName(EXPECTED_CHAIN_ID));
+          console.log('Expected and connected network match.');
         }
       } catch (error) {
         console.error('Failed to initialize provider:', error);

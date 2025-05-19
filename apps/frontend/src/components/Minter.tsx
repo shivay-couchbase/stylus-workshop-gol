@@ -40,8 +40,10 @@ function Minter({ contractAddress = DEFAULT_CONTRACT_ADDRESS, name }: MintProps)
     try {
       setIsLoading(true);
 
+      if (!signer?.provider) return;
       const transferTopic = ethers.id("Transfer(address,address,uint256)");
-      const logs = await signer.provider!.getLogs({
+      if (!signer?.provider) return;
+      const logs = await signer.provider.getLogs({
         address: contractAddress,
         fromBlock: 0,
         toBlock: 'latest',
@@ -98,6 +100,10 @@ function Minter({ contractAddress = DEFAULT_CONTRACT_ADDRESS, name }: MintProps)
       if (!code || code === '0x') throw new Error(`No contract code at ${contractAddress}`);
 
       console.log('Sending mint tx from UI...');
+      console.log('Signer:', signer);
+      console.log('Signer provider:', signer?.provider);
+      console.log('window.ethereum:', window.ethereum);
+      console.log('Signer === window.ethereum signer:', signer.provider === window.ethereum);
 
       const tx = await contract.mint();
       console.log('Tx hash:', tx.hash);

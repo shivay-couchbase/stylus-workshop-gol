@@ -100,7 +100,7 @@ function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Link to="/" className="text-white font-bold">NFT Minter</Link>
+                <Link to="/" className="text-white font-bold">Game of Life on Stylus</Link>
               </div>
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">

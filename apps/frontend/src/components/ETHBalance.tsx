@@ -20,7 +20,7 @@ export default function ETHBalance({ publicClient, account }: ETHBalanceProps) {
         });
         setBalance(balance);
       } catch (error) {
-        console.error('Error fetching balance:', error);
+
       }
     };
 

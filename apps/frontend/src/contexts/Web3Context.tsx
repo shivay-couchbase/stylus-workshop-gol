@@ -49,9 +49,28 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
     setup();
   }, []);
 
-  const connect = async () => {};
-  const disconnect = () => {};
+  const connect = async () => {
+    try {
+      const provider = new ethers.JsonRpcProvider(LOCAL_RPC);
+      setProvider(provider);
+      const wallet = new ethers.Wallet(LOCAL_PRIVATE_KEY, provider);
+      setSigner(wallet);
+      setAddress(wallet.address);
+      const network = await provider.getNetwork();
+      setChainId(Number(network.chainId));
+      setIsConnected(true);
+    } catch (error) {
+      console.error("Failed to connect:", error);
+    }
+  };
 
+  const disconnect = () => {
+    setProvider(null);
+    setSigner(null);
+    setAddress(null);
+    setChainId(null);
+    setIsConnected(false);
+  };
   return (
     <Web3Context.Provider value={{ provider, signer, address, chainId, connect, disconnect, isConnected }}>
       {children}

@@ -8,7 +8,7 @@ export default function RustStylusNFTPage() {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-2">Game on Life on Stylus</h1>
+        <h1 className="text-4xl font-bold text-white mb-2">Game of Life on Stylus</h1>
         <p className="text-gray-300">Mint your game of life NFT on Arbitrum Stylus</p>
       </div>
       

@@ -105,7 +105,8 @@ Configure your wallet with these local network settings:
 
 ## Funding and Using Test Wallets
 
-> **Important:** Use one wallet address to deploy contracts and a different wallet address to interact with them as a user. This separation simulates real-world scenarios and prevents issues such as being unable to mint NFTs during testing.
+> [!IMPORTANT]
+> Use one wallet address to deploy contracts and a different wallet address to interact with them as a user. This separation simulates real-world scenarios and prevents issues such as being unable to mint NFTs during testing. Additionally, keep the deployer key separate from user/browser wallets and avoid importing it into browser extensions to prevent transaction failures or unexpected behavior due to nonce reuse.
 
 ### Preloaded Accounts
 

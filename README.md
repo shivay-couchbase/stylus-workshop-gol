@@ -168,7 +168,8 @@ This script sends ETH from the master account to each test account so you can co
 
 ### Contracts
 Before you run contract commands, start a local Ethereum node:
-- Clone the devnode: `git clone https://github.com/OffchainLabs/nitro-devnode.git apps/nitro-devnode` (TODO: add a postinstall script to clone the repo)
+- Clone the devnode: `git clone https://github.com/OffchainLabs/nitro-devnode.git apps/nitro-devnode`
+  - **Codespaces users:** This is handled by the Codespace devcontainer. You don't need to run this command.
 - Start the Nitro node: `./apps/nitro-devnode/run-dev-node.sh`
 
 After starting the node, run these commands:

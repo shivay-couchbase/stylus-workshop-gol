@@ -1,28 +1,28 @@
 // Define custom Stylus chain
 import { defineChain } from 'viem'
 
-export const nitroDevnet = defineChain({
+export const localhost = defineChain({
   id: 412346,
-  name: 'Arbitrum Nitro Devnet',
-  network: 'arbitrum-nitro-devnet',
+  name: 'Nitro Localhost',
+  network: 'Nitro localhost',
   nativeCurrency: {
     decimals: 18,
-    name: 'Ether',
+    name: 'ETH',
     symbol: 'ETH',
   },
   rpcUrls: {
-    default: { 
+    default: {
       // In Codespaces: use the forwarded URL from the Ports tab for browser/wallet connections. For CLI tools inside the Codespace terminal, localhost works.
       http: ['http://localhost:8547'],
       // In Codespaces: use the forwarded WebSocket URL from the Ports tab for browser/wallet connections. For CLI tools inside the Codespace terminal, localhost works.
       webSocket: ['ws://localhost:8547']
     },
-    public: { 
+    public: {
       // In Codespaces: use the forwarded URL from the Ports tab for browser/wallet connections. For CLI tools inside the Codespace terminal, localhost works.
       http: ['http://localhost:8547'],
       // In Codespaces: use the forwarded WebSocket URL from the Ports tab for browser/wallet connections. For CLI tools inside the Codespace terminal, localhost works.
       webSocket: ['ws://localhost:8547']
     },
   },
-  testnet: true,
+  testnet: false,
 })

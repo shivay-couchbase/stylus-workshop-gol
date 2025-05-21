@@ -1,9 +1,11 @@
-import { createContext, ReactNode, useState, useContext } from 'react';
-import { ethers } from 'ethers';
+import React, { createContext, ReactNode, useState, useContext } from 'react';
+import { createPublicClient, createWalletClient, custom } from 'viem';
+import { localhost } from '../constants';
+
 
 interface Web3ContextType {
-  provider: ethers.JsonRpcProvider | ethers.BrowserProvider | null;
-  signer: ethers.Wallet | ethers.JsonRpcSigner | null;
+  publicClient: ReturnType<typeof createPublicClient> | null;
+  walletClient: ReturnType<typeof createWalletClient> | null;
   address: string | null;
   chainId: number | null;
   connect: () => Promise<void>;
@@ -12,8 +14,8 @@ interface Web3ContextType {
 }
 
 const Web3Context = createContext<Web3ContextType>({
-  provider: null,
-  signer: null,
+  publicClient: null,
+  walletClient: null,
   address: null,
   chainId: null,
   connect: async () => {},
@@ -24,8 +26,8 @@ const Web3Context = createContext<Web3ContextType>({
 export const useWeb3 = () => useContext(Web3Context);
 
 export const Web3Provider = ({ children }: { children: ReactNode }) => {
-  const [provider, setProvider] = useState<ethers.JsonRpcProvider | ethers.BrowserProvider | null>(null);
-  const [signer, setSigner] = useState<ethers.Wallet | ethers.JsonRpcSigner | null>(null);
+  const [publicClient, setPublicClient] = useState<ReturnType<typeof createPublicClient> | null>(null);
+  const [walletClient, setWalletClient] = useState<ReturnType<typeof createWalletClient> | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -36,15 +38,24 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
       return;
     }
     try {
-      const provider = new ethers.BrowserProvider((window as any).ethereum);
-      await provider.send('eth_requestAccounts', []);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      const network = await provider.getNetwork();
-      setProvider(provider);
-      setSigner(signer);
-      setAddress(address);
-      setChainId(Number(network.chainId));
+      // Get the current chainId from the wallet
+      const chainIdHex = await (window as any).ethereum.request({ method: 'eth_chainId' });
+      const chainId = Number(chainIdHex);
+      const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+      const newAddress = accounts[0];
+      const walletClient = createWalletClient({
+        chain: localhost,
+        transport: custom((window as any).ethereum),
+        account: newAddress as `0x${string}`
+      });
+      const publicClient = createPublicClient({
+        chain: localhost,
+        transport: custom((window as any).ethereum),
+      });
+      setWalletClient(walletClient);
+      setPublicClient(publicClient);
+      setAddress(newAddress);
+      setChainId(chainId);
       setIsConnected(true);
     } catch (err) {
       console.error('Failed to connect wallet:', err);
@@ -54,13 +65,18 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
   const disconnect = () => {
     setAddress(null);
     setIsConnected(false);
-    setSigner(null);
-    setProvider(null);
+    setWalletClient(null);
+    setPublicClient(null);
     setChainId(null);
   };
 
+  // Debug logs for context propagation
+  React.useEffect(() => {
+    console.log('[Web3Provider] Context updated', { publicClient, walletClient, address, chainId, isConnected });
+  }, [publicClient, walletClient, address, chainId, isConnected]);
+
   return (
-    <Web3Context.Provider value={{ provider, signer, address, chainId, connect, disconnect, isConnected }}>
+    <Web3Context.Provider value={{ publicClient, walletClient, address, chainId, connect, disconnect, isConnected }}>
       {children}
     </Web3Context.Provider>
   );

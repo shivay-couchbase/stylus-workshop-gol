@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ethers } from 'ethers';
-import { useWeb3 } from '../contexts/Web3Context';
 import GameOfLifeNFTAbi from '../abi/GameOfLifeNFT.json';
+import { useWeb3 } from '../contexts/Web3Context';
+import { localhost } from '../constants';
 
 
 interface TokenData {
@@ -15,141 +15,108 @@ interface MinterProps {
 }
 
 const Minter: React.FC<MinterProps> = ({ contractAddress, name }) => {
-  const { provider, signer, address: account, isConnected } = useWeb3();
+  const { publicClient, walletClient, address: account, isConnected, connect } = useWeb3();
+
+  // Auto-connect if not connected and provider exists
+  React.useEffect(() => {
+    if (!isConnected && typeof window !== 'undefined' && (window as any).ethereum) {
+      connect();
+    }
+  }, [isConnected, connect]);
   const [tokenData, setTokenData] = useState<TokenData[]>([]);
-  const [balance, setBalance] = useState<bigint>(0n);
+  
   const [isLoading, setIsLoading] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
-  // Get contract instance
-  const getContract = useCallback(() => {
-    if (!signer) return null;
-    return new ethers.Contract(contractAddress, GameOfLifeNFTAbi, signer);
-  }, [signer, contractAddress]);
-
   // Fetch user's minted NFTs
   const fetchUserMints = useCallback(async () => {
-    if (!isConnected || !account || !provider) {
-      console.error('Not connected or missing account/provider');
-      return;
-    }
-    
-    const contract = getContract();
-    if (!contract) {
-      console.error('No contract instance available');
-      return;
-    }
-    
+    if (!publicClient || !account) return;
     try {
       setIsLoading(true);
       setError(null);
-
-      // Check if contract is deployed
-      const code = await provider.getCode(contractAddress);
-      if (code === '0x') {
-        throw new Error('Contract not deployed at the specified address');
-      }
-
-      // Fetch Transfer logs for mints to this user (from zero address)
-      const transferTopic = ethers.id('Transfer(address,address,uint256)');
-      const logs = await provider.getLogs({
-        address: contractAddress,
-        fromBlock: 0,
+      const logs = await publicClient.getLogs({
+        address: contractAddress as `0x${string}`,
+        event: GameOfLifeNFTAbi.find(e => e.type === 'event' && e.name === 'Transfer') as any,
+        fromBlock: 0n,
         toBlock: 'latest',
-        topics: [
-          transferTopic,
-          ethers.zeroPadValue('0x0000000000000000000000000000000000000000', 32), // from: zero address
-          ethers.zeroPadValue(account, 32) // to: user's address
-        ]
       });
-      // tokenId is indexed and is topic[3]
-      const tokenIds = logs.map(log => BigInt(log.topics[3]));
-      setBalance(BigInt(tokenIds.length));
-
+      // Only keep tokens minted to this user
+      const tokenIds = logs
+        .filter((log: any) => log.args && log.args.to && log.args.to.toLowerCase() === account.toLowerCase())
+        .map((log: any) => log.args.tokenId as bigint);
+      
       if (tokenIds.length === 0) {
         setTokenData([]);
         setIsLoading(false);
         return;
       }
-
-      // Fetch token URI for each tokenId
-      const tokenDataPromises = tokenIds.map(async (id) => {
-        try {
-          const uri = await contract.tokenURI(id);
-          return { id, uri };
-        } catch (err) {
-          console.warn(`Failed to fetch URI for token ${id.toString()}`, err);
-          return null;
-        }
+      const tokenDataPromises = tokenIds.map(async (id: bigint) => {
+        const uri = await publicClient.readContract({
+          address: contractAddress as `0x${string}`,
+          abi: GameOfLifeNFTAbi,
+          functionName: 'tokenURI',
+          args: [id]
+        });
+        return { id, uri: uri as string };
       });
-      const tokenDataResults = (await Promise.all(tokenDataPromises)).filter(Boolean) as TokenData[];
+      const tokenDataResults = await Promise.all(tokenDataPromises);
       setTokenData(tokenDataResults);
-      setIsLoading(false);
-      return;
-      // (Old fallback logic and unreachable code removed)
-
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-      setError(`Failed to fetch NFTs: ${errorMessage}`);
+      
+    } catch (error) {
+      console.error('Error fetching NFTs:', error);
+      setError('Failed to fetch NFTs: ' + (error instanceof Error ? error.message : String(error)));
       setTokenData([]);
     } finally {
       setIsLoading(false);
     }
-  }, [account, isConnected, signer, contractAddress, getContract]);
+  }, [account, publicClient, contractAddress]);
 
   // Mint NFT
   const handleMint = useCallback(async () => {
-    if (!isConnected || !signer || !account) {
-      setError('Connect your wallet first');
+    if (!walletClient || !account) {
       return;
     }
-
-    const contract = getContract();
-    if (!contract) {
-      setError('No contract available');
-      return;
-    }
-
     try {
       setError(null);
       setIsMinting(true);
-
-      // Check if contract is deployed
-      const code = await provider?.getCode(contractAddress);
-      if (!code || code === '0x') {
-        throw new Error(`No contract deployed at ${contractAddress}`);
+      try {
+        await Promise.race([
+          walletClient.writeContract({
+            address: contractAddress as `0x${string}`,
+            abi: GameOfLifeNFTAbi,
+            functionName: 'mint',
+            account: account as `0x${string}`,
+            args: [],
+            chain: localhost
+          }),
+          new Promise((_, reject) => setTimeout(() => {
+            reject(new Error('writeContract timed out after 30s'));
+          }, 30000))
+        ]);
+      } catch (err) {
+        throw err;
       }
-
-      const tx = await contract.mint();
-      const receipt = await tx.wait();
-      console.log('Minted NFT:', receipt)
-
-      // Refresh the user's NFTs after a short delay
       setTimeout(() => fetchUserMints(), 2000);
-
-    } catch (err: any) {
-
-      if (err?.code === 4001) {
-        setError('Transaction was rejected');
-      } else if (err?.code === 'UNPREDICTABLE_GAS_LIMIT' || err?.message?.includes('execution reverted')) {
-        setError('Mint failed - you may already own an NFT');
-      } else {
-        setError(`Mint failed: ${err.message || 'Unknown error'}`);
-      }
+    } catch (error) {
+      setError('Mint failed');
     } finally {
       setIsMinting(false);
     }
-  }, [signer, account, isConnected, contractAddress, getContract, fetchUserMints, provider]);
+  }, [walletClient, account, contractAddress, fetchUserMints]);
 
   // Fetch mints on connect and after mint
   useEffect(() => {
-    fetchUserMints();
-    const interval = setInterval(fetchUserMints, 10000); // Refresh every 10 seconds
-    return () => clearInterval(interval);
-  }, [fetchUserMints]);
+    if (isConnected && account && publicClient) {
+      fetchUserMints();
+      const interval = setInterval(fetchUserMints, 10000); // Refresh every 10 seconds
+      return () => clearInterval(interval);
+    } else {
+      setTokenData([]);
+      (0n);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, account, publicClient, fetchUserMints]);
 
   return (
     <div className="minter-container p-6 max-w-2xl mx-auto bg-gray-800 rounded-lg shadow-lg">
@@ -185,7 +152,7 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name }) => {
               {tokenData.length > 0 ? (
                 <div>
                   <h3 className="text-xl font-semibold text-white mb-4">
-                    Your NFTs ({balance.toString()}):
+                    Your NFTs ({tokenData.length.toString()}):
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {tokenData.map(({ id, uri }) => (

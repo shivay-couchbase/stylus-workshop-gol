@@ -34,13 +34,14 @@ importers:
         specifier: ^3.6.2
         version: 3.6.2(typescript@5.7.3)
 
-  apps/contracts-stylus: {}
-
-  apps/frontend:
+  apps/contracts-stylus:
     dependencies:
       ethers:
         specifier: ^6.14.1
         version: 6.14.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+
+  apps/frontend:
+    dependencies:
       react:
         specifier: ^18.2.0
         version: 18.3.1

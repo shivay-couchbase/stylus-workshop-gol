@@ -1,5 +1,5 @@
 // Allow `cargo stylus export-abi` to generate a main function.
-#![cfg_attr(not(any(test, feature = "export-abi")), no_main)]
+#![cfg_attr(not(any(feature = "export-abi", test)), no_main)]
 extern crate alloc;
 
 use stylus_sdk::{alloy_primitives::U256, prelude::*, msg, storage::StorageU256};

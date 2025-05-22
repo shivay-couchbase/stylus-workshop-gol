@@ -1,5 +1,5 @@
 [package]
-name = "stylus-workshop"
+name = "game_of_life_contract"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -12,10 +12,10 @@ description = "Stylus workshop example"
 alloy-primitives = { version = "0.7.6", default-features = false }
 alloy-sol-types = "0.8.20"
 mini-alloc = "0.4.2"
-stylus-sdk = "0.6.0"
+stylus-sdk = { version = "=0.8.4", default-features = false, features = ["mini-alloc"] }
 hex = "0.4.3"
 dotenv = "0.15.0"
-openzeppelin-stylus = "0.1.1"
+openzeppelin-stylus = { git = "https://github.com/OpenZeppelin/rust-contracts-stylus.git", branch = "v0.2", features = ["std"] }
 
 [dev-dependencies]
 tokio = { version = "1.12.0", features = ["full"] }
@@ -37,8 +37,8 @@ toml = "0.8.13"
 regex = "1.11.1"
 
 [features]
-export-abi = []
-debug = ["stylus-sdk/debug"]
+export-abi = ["stylus-sdk/export-abi"]
+debug      = ["stylus-sdk/debug"]
 
 [[bin]]
 name = "genft"

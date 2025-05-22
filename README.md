@@ -2,7 +2,36 @@
 
 ![cover](./workshop-cover.png)
 
+## Welcome & Codespaces Quick Start
+
+> **Run this workshop in GitHub Codespaces.** The Codespace devcontainer includes all dependencies and configurations. Click the button below to launch your Codespace and start building!
+
+[![Open in Codespaces](https://img.shields.io/badge/Open%20in-GitHub%20Codespaces-blue?logo=github&logoColor=white&style=for-the-badge)](https://codespaces.new/ArbitrumFoundation/stylus-workshop-gol/tree/master)
+
+**Quick Start:**
+1. Click the "Open in Codespaces" button above.
+2. Wait for your Codespace to initialize (this may take a minute).
+3. Open a terminal in Codespaces (Terminal → New Terminal).
+4. Follow the steps below. You do not need to install anything manually!
+
+---
+
+## What You'll Build
+
+In this hands-on workshop, you will:
+- Implement and compare smart contracts in both Rust (Stylus) and Solidity.
+- Deploy them on a local Arbitrum Nitro devnode.
+- Connect your contracts to a modern React frontend.
+- Build a full dApp using the latest tools and best practices.
+
+---
+
+
 ## Requirements
+
+> **Skip this section if you use Codespaces!** The Codespace devcontainer already includes all tools.
+
+For advanced/local setup:
 - [pnpm](https://pnpm.io/installation)
 - [nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 - [rust](https://rustup.rs/)
@@ -10,52 +39,97 @@
 - [Docker](https://www.docker.com/products/docker-desktop/)
 - [Nitro-devnode](https://github.com/OffchainLabs/nitro-devnode?tab=readme-ov-file#usage)
 
-## Getting started
-- `rustup update stable` update the rust version
-- `rustup target add wasm32-unknown-unknown` add WebAssembly target
+## Project Structure
+
+- `apps/frontend` – React/TypeScript frontend
+- `apps/contracts-stylus` – Rust (Stylus) smart contracts
+- `apps/contracts-solidity` – Solidity smart contracts
+- `apps/nitro-devnode` – Local Arbitrum devnode
+
+## Getting Started (in Codespaces)
+
+Your Codespace comes pre-configured. Open a terminal and follow the steps in each section below. If you want to run locally, review the "Requirements" section above and follow these same steps in your own environment.
 
 ### Step 1: Setup
-- `git checkout step-1-setup` let's have a look around
-- `pnpm install -r`
--  `cd apps/contracts-stylus`   `cargo stylus check`
+- `git checkout step-1-setup` — Check out the initial setup branch.
+- `pnpm install -r` — Install dependencies in all `apps`.
+- `cd apps/contracts-stylus && cargo stylus check` — Verify the Rust contract setup.
 
 ### Step 2: Game of Life Stylus Contract
-- `git checkout step-2-stylus-contract` let's implement a Game Of Life with Stylus
-- `pnpm install -r` install all the dependencies in all the `apps`
--  `cd apps/contracts-stylus`   `cargo stylus check`
--  `src/lib.rs`
+- `git checkout step-2-stylus-contract` — Switch to the Stylus contract step.
+- `pnpm install -r` — Update dependencies.
+- `cd apps/contracts-stylus && cargo stylus check` — Verify the Stylus contract.
+- Edit `src/lib.rs` as instructed.
 
 ### Step 3: Frontend
-- `git checkout step-3-frontend` let's put together a frontend
-- `pnpm install -r` install all the dependencies in all the `apps`
--  `cd apps/contracts-stylus`   `cargo stylus check`
+- `git checkout step-3-frontend` — Switch to the frontend step.
+- `pnpm install -r` — Update dependencies.
+- `cd apps/contracts-stylus && cargo stylus check` — Verify contracts if needed.
 
 ### Step 4: Solidity Contract
-- `git checkout step-4-solidity-contract` let's have a look to the equivalent implementation in Solidity
--  `src/NFT.sol`
--  `cd apps/contracts-stylus`   `cargo stylus check`
+- `git checkout step-4-solidity-contract` — Switch to the Solidity contract step.
+- Review `src/NFT.sol`.
+- `cd apps/contracts-stylus && cargo stylus check` — Verify contracts if needed.
 
 ### Step 5: Solidity + Stylus Contract
-- `git checkout master` you go back to the end result
-- `pnpm install -r` install all the dependencies in all the `apps`
--  `src/StylusNFT.sol`
--  `cd apps/contracts-stylus`   `cargo stylus check`
+- `git checkout master` — Switch to the final result.
+- `pnpm install -r` — Install all dependencies.
+- Review `src/StylusNFT.sol`.
+- `cd apps/contracts-stylus && cargo stylus check` — Verify contracts if needed.
 
-## Workspace shortcuts
-Basic commands to run the project across the different apps.
+## Workspace Shortcuts
+
+Use these commands to run the project across different apps:
 
 ### Frontend
-- `pnpm --filter frontend dev` start the development server
-- `pnpm --filter frontend build` build for production
-- `pnpm --filter frontend test` run tests
-- `pnpm --filter frontend lint` run linting
-- configure a local network in your wallet with the following:
-  - name: Localhost-Nitro
-  - RPC URL: http://localhost:8547
+- `pnpm --filter frontend dev` — Start the development server.
+- `pnpm --filter frontend build` — Build for production.
+- `pnpm --filter frontend test` — Run tests.
+- `pnpm --filter frontend lint` — Run linting.
+
+Configure your wallet with these local network settings:
+  - Name: Localhost-Nitro
+  - RPC URL: http://localhost:8547 (or the externally available URL in Codespaces, see below)
   - Chain ID: 412346
   - Currency Symbol: ETH
-- Nitro comes with `0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E` and the private key `0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659` with ETH preloaded 
-- Below are a few addresses to use for testing. Run the `scripts/funds.sh` script to fund them with ETH from the master account.
+
+> **Codespaces users:**
+> When running the Nitro devnode inside Codespaces, you cannot connect to `localhost:8547` from your local machine or wallet directly. You must use the Codespaces port forwarding feature:
+>
+> 1. In your Codespace, click the "Ports" tab (usually at the bottom or side of the editor).
+> 2. Find the forwarded port for `8547`.
+> 3. Copy the "Local address" or "URL" provided by Codespaces (it will look like `https://<something>-8547.app.github.dev`).
+> 4. Use this URL as the RPC URL in your wallet or in your frontend configuration.
+>
+> This ensures your wallet and dApp connect to the devnode running inside your Codespace.
+
+## Funding and Using Test Wallets
+
+> [!IMPORTANT]
+> Use one wallet address to deploy contracts and a different wallet address to interact with them as a user. This separation simulates real-world scenarios and prevents issues such as being unable to mint NFTs during testing. Additionally, keep the deployer key separate from user/browser wallets and avoid importing it into browser extensions to prevent transaction failures or unexpected behavior due to nonce reuse.
+
+### Preloaded Accounts
+
+Nitro comes with the following preloaded account:
+
+- **Deployer (Master Account):**
+  - Address: `0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E`
+  - Private Key: `0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659`
+  - Use this account to deploy contracts.
+
+### Funding User Wallets
+
+Interact with the contracts as a user by choosing a different wallet address from the deployer. Use one of the test accounts below, each with a unique address and private key.
+
+Fund these accounts with ETH from the deployer (master) account. Run this script in your Codespace terminal:
+
+```bash
+./scripts/funds.sh
+```
+
+This script sends ETH from the master account to each test account so you can complete transactions during the workshop.
+
+#### Test Accounts
 
 - (0) 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 (1 ETH)
 - (1) 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 (1 ETH)
@@ -68,8 +142,9 @@ Basic commands to run the project across the different apps.
 - (8) 0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f (1 ETH)
 - (9) 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720 (1 ETH)
 
-Testing Private Keys 
-==================
+**Testing Private Keys:**  
+*(For local development only! Never use these on mainnet.)*
+
 - (0) 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 - (1) 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
 - (2) 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
@@ -83,22 +158,27 @@ Testing Private Keys
 
 **Notice: Do not use these keys in production or put funds in them. They are for testing purposes only.**
 
-### Contracts
-Before running contract commands, make sure you have a local Ethereum node running:
-- `git clone git clone https://github.com/OffchainLabs/nitro-devnode.git in apps` (TODO add a postinstall script to clone the repo)
-- `./apps/nitro-devnode/run-dev-node.sh` start a local Nitro node 
+### How to Use
 
-Then you can run:
-- `pnpm --filter contracts-stylus check` verify and compile the contract
-- `pnpm --filter contracts-stylus test` runs the tests for the contract
-- `pnpm --filter contracts-stylus test:integration` runs the integration tests for the contract
-- `pnpm --filter contracts-stylus deploy:local` deploy the contract to the local network
+1. Deploy contracts using the master account.
+2. Interact with contracts (e.g., mint NFTs, call functions) using one of the funded test accounts.
+3. Switch wallets in your web3 wallet (e.g., MetaMask) as needed.
+
+> **Tip:** Keep deployer and user accounts separate to better understand contract permissions and simulate real dApp usage.
+
+### Contracts
+Before you run contract commands, start a local Ethereum node:
+- Clone the devnode: `git clone https://github.com/OffchainLabs/nitro-devnode.git apps/nitro-devnode`
+  - **Codespaces users:** This is handled by the Codespace devcontainer. You don't need to run this command.
+- Start the Nitro node: `./apps/nitro-devnode/run-dev-node.sh`
+
+After starting the node, run these commands:
+- `pnpm --filter contracts-stylus check` — Verify and compile the contract.
+- `pnpm --filter contracts-stylus test` — Run the contract tests.
+- `pnpm --filter contracts-stylus test:integration` — Run contract integration tests.
+- `pnpm --filter contracts-stylus deploy:local` — Deploy the contract to the local network.
 
 ### Contracts-solidity
-- `pnpm --filter contracts-solidity build` build the contracts
-- `pnpm --filter contracts-solidity test` run the tests
-- `pnpm --filter contracts-solidity deploy:local` deploy the contract to the local network
-
-TODO:
-- Make it works `cargo stylus export-abi`
-- Update to Stylus SDK 0.8.0
+- `pnpm --filter contracts-solidity build` — Build the contracts.
+- `pnpm --filter contracts-solidity test` — Run the tests.
+- `pnpm --filter contracts-solidity deploy:local` — Deploy the contract to the local network.

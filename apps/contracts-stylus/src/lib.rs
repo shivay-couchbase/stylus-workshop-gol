@@ -1,9 +1,11 @@
 // Allow `cargo stylus export-abi` to generate a main function.
-#![cfg_attr(not(any(feature = "export-abi", test)), no_main)]
+#![cfg_attr(not(any(feature = "export-abi", test)), no_std, no_main)]
 extern crate alloc;
 
-use stylus_sdk::{alloy_primitives::U256, prelude::*, msg, storage::StorageU256};
+use stylus_sdk::{alloy_primitives::U256, prelude::*, storage::StorageU256};
 use alloc::{string::String, vec::Vec};
+use alloc::vec;
+use alloc::format;
 
 use openzeppelin_stylus::token::erc721::Erc721;
 
@@ -20,7 +22,7 @@ pub struct GameOfLifeNFT {
 #[inherit(Erc721)]
 impl GameOfLifeNFT {
     pub fn mint(&mut self) -> Result<(), Vec<u8>> {
-        let to = msg::sender();
+        let to = self.vm().msg_sender();
         let token_id = self.token_supply.get() + U256::from(1);
         self.token_supply.set(token_id);
         Ok(self.erc721._mint(to, token_id)?)

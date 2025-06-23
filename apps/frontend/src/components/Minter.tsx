@@ -135,14 +135,14 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name, abi }) => {
       setTokenData([]);
       (0n);
     }
-  }, [isConnected, account, publicClient, fetchUserMints, contractAddress, abi]);
+  }, [isConnected, account, publicClient, fetchUserMints]);
 
   return (
     <div className="minter-container p-6 max-w-2xl mx-auto bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold text-white mb-2 text-center">Game of Life NFT Minter</h2>
-{name && (
-  <h3 className="text-lg font-semibold text-blue-300 mb-6 text-center">{name}</h3>
-) }
+      {name && (
+        <h3 className="text-lg font-semibold text-blue-300 mb-6 text-center">{name}</h3>
+      )}
       {!isConnected || !account ? (
         <div className="flex flex-col items-center">
           <p className="text-gray-300 text-center">Please connect your wallet to mint an NFT</p>
@@ -176,7 +176,7 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name, abi }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {tokenData.map(({ id, uri }) => (
                       <div key={id.toString()} className="bg-gray-700 p-4 rounded-lg">
-                        <div 
+                        <div
                           className="aspect-square bg-white rounded mb-2 flex items-center justify-center overflow-hidden p-2"
                           dangerouslySetInnerHTML={{ __html: uri }}
                         />

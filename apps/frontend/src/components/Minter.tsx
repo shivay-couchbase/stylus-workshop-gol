@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import GameOfLifeNFTAbi from '../abi/GameOfLifeNFT.json';
 import { useWeb3 } from '../contexts/Web3Context';
 import { localhost } from '../constants';
+import SimilarMints from './SimilarMints';
+import { vectorSearchService } from '../services/vectorSearchService';
 
 
 interface TokenData {
@@ -29,6 +31,10 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name, abi }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSimilarMints, setShowSimilarMints] = useState(false);
+  const [selectedTokenSvg, setSelectedTokenSvg] = useState<string>('');
+  const [selectedTokenId, setSelectedTokenId] = useState<bigint>(0n);
+  const [isStoringMint, setIsStoringMint] = useState(false);
 
   const fetchUserMints = useCallback(async () => {
     if (!publicClient || !account) return;
@@ -74,6 +80,13 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name, abi }) => {
       });
       const tokenDataResults = await Promise.all(tokenDataPromises);
       setTokenData(tokenDataResults);
+      
+      // Store each mint in the vector search backend
+      tokenDataResults.forEach(({ id, uri }) => {
+        if (uri && uri !== 'ERROR') {
+          storeMintInBackend(id, uri);
+        }
+      });
       
     } catch (error) {
       console.error('[Minter] Error fetching NFTs:', error);
@@ -125,6 +138,41 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name, abi }) => {
       setIsMinting(false);
     }
   }, [walletClient, account, contractAddress, abi, fetchUserMints]);
+
+  // Store mint in vector search backend
+  const storeMintInBackend = useCallback(async (tokenId: bigint, svg: string) => {
+    if (!account || !contractAddress) return;
+    
+    try {
+      setIsStoringMint(true);
+      await vectorSearchService.storeMint({
+        contract: contractAddress,
+        tokenId: Number(tokenId),
+        owner: account,
+        svg: svg
+      });
+      console.log(`[Minter] Stored mint ${tokenId} in vector search backend`);
+    } catch (error) {
+      console.error('[Minter] Failed to store mint in backend:', error);
+      // Don't show error to user as this is a background operation
+    } finally {
+      setIsStoringMint(false);
+    }
+  }, [account, contractAddress]);
+
+  // Show similar mints for a token
+  const handleShowSimilarMints = useCallback((tokenId: bigint, svg: string) => {
+    setSelectedTokenId(tokenId);
+    setSelectedTokenSvg(svg);
+    setShowSimilarMints(true);
+  }, []);
+
+  // Close similar mints modal
+  const handleCloseSimilarMints = useCallback(() => {
+    setShowSimilarMints(false);
+    setSelectedTokenSvg('');
+    setSelectedTokenId(0n);
+  }, []);
 
   useEffect(() => {
     if (isConnected && account && publicClient) {
@@ -180,7 +228,13 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name, abi }) => {
                           className="aspect-square bg-white rounded mb-2 flex items-center justify-center overflow-hidden p-2"
                           dangerouslySetInnerHTML={{ __html: uri }}
                         />
-                        <p className="text-white text-center">Token ID: {id.toString()}</p>
+                        <p className="text-white text-center mb-2">Token ID: {id.toString()}</p>
+                        <button
+                          onClick={() => handleShowSimilarMints(id, uri)}
+                          className="w-full px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                        >
+                          Find Similar
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -191,6 +245,16 @@ const Minter: React.FC<MinterProps> = ({ contractAddress, name, abi }) => {
             </React.Fragment>
           )}
         </div>
+      )}
+      
+      {/* Similar Mints Modal */}
+      {showSimilarMints && (
+        <SimilarMints
+          currentSvg={selectedTokenSvg}
+          contract={contractAddress}
+          tokenId={Number(selectedTokenId)}
+          onClose={handleCloseSimilarMints}
+        />
       )}
     </div>
   );
